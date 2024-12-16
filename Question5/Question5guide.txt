@@ -1,0 +1,17 @@
+Question 5 guide :-
+1) Login to AWS account , from AWS management console move to navigate to the IAM  Dashboard.
+2) Select AWS Lambda as the trusted entity
+3) Attach the AmazonEC2FullAccess policy
+4) Now navigate to the Lambda Dashboard → Create a new function.
+5) Select Runtime as Python 3.x	
+6) Select the execution role as the IAM role created in steps 1 to 3
+7) Run the Python script using Boto3 (shared in github)
+8) Now navigate to CloudWatch → Rules → Create Rule
+9) In Event Source: Select Event Pattern , Service Name: EC2 , Event Type: EC2 Instance State-change Notification , Specific State: running
+10) Add your Lambda Function as the target
+11) Save the rule and ensure it is enabled
+12) Launch a new EC2 instance using the AWS Console or CLI
+13) Wait for a few moments for the Lambda function to execute
+14) Go to the EC2 Dashboard → Select the instance → Tags tab
+15) Verify the tags
+

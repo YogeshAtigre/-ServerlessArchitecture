@@ -1,0 +1,22 @@
+import boto3
+import datetime
+
+def lambda_handler(event, context):
+    # Initialize the EC2 client
+    ec2_client = boto3.client('ec2')
+    
+    # Get the instance ID from the event
+    instance_id = event['detail']['instance-id']
+    
+    # Define tags
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    tags = [
+        {'Key': 'LaunchDate', 'Value': current_date},
+        {'Key': 'CustomTag', 'Value': 'AutoTaggedInstance'}
+    ]
+    
+    # Apply the tags to the instance
+    ec2_client.create_tags(Resources=[instance_id], Tags=tags)
+    
+    # Log success
+    print(f"Successfully tagged instance {instance_id} with {tags}")

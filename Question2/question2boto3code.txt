@@ -1,0 +1,39 @@
+import boto3
+from datetime import datetime, timezone, timedelta
+
+# Specify your bucket name here
+BUCKET_NAME = 'your-bucket-name'
+RETENTION_DAYS = 30
+
+def lambda_handler(event, context):
+    # Initialize S3 client
+    s3 = boto3.client('s3')
+    
+    try:
+        # Get the list of objects in the bucket
+        objects = s3.list_objects_v2(Bucket=BUCKET_NAME)
+        if 'Contents' not in objects:
+            print(f"No objects found in bucket {BUCKET_NAME}")
+            return
+        
+        deleted_files = []
+        now = datetime.now(timezone.utc)
+        retention_period = timedelta(days=RETENTION_DAYS)
+        
+        for obj in objects['Contents']:
+            file_name = obj['Key']
+            last_modified = obj['LastModified']
+            
+            # Check if the file is older than 30 days
+            if now - last_modified > retention_period:
+                print(f"Deleting file: {file_name} (Last Modified: {last_modified})")
+                s3.delete_object(Bucket=BUCKET_NAME, Key=file_name)
+                deleted_files.append(file_name)
+        
+        if deleted_files:
+            print(f"Deleted files: {deleted_files}")
+        else:
+            print("No files older than 30 days found.")
+
+    except Exception as e:
+        print(f"Error: {str(e)}")

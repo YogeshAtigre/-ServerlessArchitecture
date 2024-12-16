@@ -1,0 +1,21 @@
+Question 4 guide - 
+1) Login to AWS account , from AWS management console move to navigate to the EC2 Dashboard.
+2) Identify an existing EBS volume or create a new one by navigating to Volumes under the Elastic Block Store section.
+3) Note down the Volume ID (e.g., vol-0abcd1234efgh5678) of the EBS volume you wish to back up.
+4) Now we need to create a IAM role for lambda funtion
+5) Navigate to the IAM dashboard → Roles → Create Role.
+6) Choose AWS Service and select Lambda.
+7) Attach the AmazonEC2FullAccess policy for simplicity during testing. For production, create a custom policy with the least privilege principle, allowing only CreateSnapshot and DeleteSnapshot actions.
+8) Provide a Name to the role and save it 
+9) Create a Lambda Function , Go to the Lambda Dashboard → Create Function → Choose Author from Scratch.
+10) Provide a name and select Python 3.x as the runtime.
+11) Assign the IAM role created in Steps 6 to 8.
+12) Write the Lambda Script : Python boto3 script (shared in github)
+13) Save and Test the Function.
+NOTE :- Below mentioned steps are add for further optimization and better tracking
+14) Event Source (Bonus) , Create a CloudWatch Event Rule.
+15) Navigate to CloudWatch Dashboard → Rules → Create Rule.
+16) Select Event Source → Schedule (e.g., cron(0 12 ? * 7 *) for weekly backups)
+17) Add the Lambda function as the target.
+18) Verify Results , Navigate to the EC2 Dashboard → Snapshots
+19) Confirm that A new snapshot for the volume is created and Older snapshots beyond the retention period are deleted

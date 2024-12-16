@@ -1,0 +1,16 @@
+Question 1 Guide
+1) Log in to the AWS Management Console and navigate to the EC2 Dashboard
+2) Launch two EC2 instances with the following configuration
+3) Instance Type: t2/t3.micro (Free Tier eligible) (dpendent on selected region)
+4) Tag ,Instance 1: Key: Action, Value: Auto-Stop and Instance 2: Key: Action, Value: Auto-Start
+5) Now go to the IAM Dashboard and create a new role
+6) Select service as Lambda ,Attach policy as AmazonEC2FullAccess.
+7) Name the role appropriately 
+8) Navigate to the AWS Lambda Console and create a new function
+9) Select Runtime as Python 3.x
+10) In execution role select the IAM role created in the previous steps
+11) Add the Python Boto3 code (shared in GitHub)
+12) Save and deploy the Lambda function.
+13) Manually invoke the function , Go to the Lambda Console, choose the function, and click Test.
+14) Use a dummy test event
+15) In EC2 Dashboard verify that the instance tagged Auto-Stop should transition to the stopped state and instance tagged Auto-Start should transition to the running state.

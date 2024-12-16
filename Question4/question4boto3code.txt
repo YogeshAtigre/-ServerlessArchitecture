@@ -1,0 +1,39 @@
+import boto3
+from datetime import datetime, timedelta
+
+# Initialize Boto3 EC2 client
+ec2 = boto3.client('ec2')
+
+# Parameters
+volume_id = ''  # Replace with your EBS volume ID
+retention_days = 30  # Set retention period
+
+def lambda_handler(event, context):
+    try:
+        # Create a snapshot
+        snapshot = ec2.create_snapshot(
+            VolumeId=volume_id,
+            Description=f"Backup of {volume_id} created on {datetime.now().strftime('%Y-%m-%d')}"
+        )
+        print(f"Snapshot created with ID: {snapshot['SnapshotId']}")
+
+        # List all snapshots for the specified volume
+        snapshots = ec2.describe_snapshots(
+            Filters=[
+                {'Name': 'volume-id', 'Values': [volume_id]},
+                {'Name': 'owner-id', 'Values': [event.get('account', 'self')]}  # Optional
+            ]
+        )['Snapshots']
+
+        # Calculate retention period
+        cutoff_date = datetime.now() - timedelta(days=retention_days)
+
+        # Delete snapshots older than the retention period
+        for snap in snapshots:
+            if 'StartTime' in snap and snap['StartTime'].replace(tzinfo=None) < cutoff_date:
+                ec2.delete_snapshot(SnapshotId=snap['SnapshotId'])
+                print(f"Deleted snapshot: {snap['SnapshotId']}")
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+

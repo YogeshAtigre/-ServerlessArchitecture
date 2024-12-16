@@ -1,0 +1,19 @@
+Question 2
+1) Login to AWS account , from AWS management console move to navigate to the S3 Dashboard.
+2) Create a New S3 Bucket
+3) Provide a unique bucket name and create the bucket
+4) Upload Test Files , Upload multiple files to the bucket 
+5) Ensure you have files older than 30 days
+6) Now Create an IAM Role for Lambda
+7) Go to the IAM Dashboard → Roles → Create Role
+8) Choose AWS Service → Lambda
+9) Attach the AmazonS3FullAccess policy , Name the role (NOTE :  In a Production scenario, use restrictive permissions)
+10) Create the Lambda Function , Go to the Lambda Dashboard → Create Function → Author from Scratch
+11) Provide a function name , Choose Python 3.x as the runtime
+12) Assign the IAM role  createed in setps 6 to 9
+13) Add the Boto3 Script (shared in Github)
+14) Save the Lambda function and deploy it
+15) Go to the Test tab and create a new test event
+16) Trigger the function manually
+17) Verify the logs in CloudWatch Logs to ensure names of the files deleted and Confirmation that only files older than 30 days were removed
+18) Go back to the S3 Dashboard , Check the target bucket to ensure that Files older than 30 days are deleted and Files newer than 30 days remain intact.

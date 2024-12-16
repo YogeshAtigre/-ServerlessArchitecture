@@ -1,0 +1,42 @@
+import boto3
+
+def lambda_handler(event, context):
+    # Initialize EC2 client
+    ec2 = boto3.client('ec2')
+    
+    # Describe instances
+    response = ec2.describe_instances(
+        Filters=[
+            {'Name': 'tag:Action', 'Values': ['Auto-Stop', 'Auto-Start']}
+        ]
+    )
+    
+    # Collect instances to stop and start
+    to_stop = []
+    to_start = []
+    
+    for reservation in response['Reservations']:
+        for instance in reservation['Instances']:
+            instance_id = instance['InstanceId']
+            state = instance['State']['Name']
+            tags = {tag['Key']: tag['Value'] for tag in instance.get('Tags', [])}
+            
+            if tags.get('Action') == 'Auto-Stop' and state == 'running':
+                to_stop.append(instance_id)
+            elif tags.get('Action') == 'Auto-Start' and state == 'stopped':
+                to_start.append(instance_id)
+    
+    # Stop Auto-Stop instances
+    if to_stop:
+        ec2.stop_instances(InstanceIds=to_stop)
+        print(f"Stopped instances: {to_stop}")
+    
+    # Start Auto-Start instances
+    if to_start:
+        ec2.start_instances(InstanceIds=to_start)
+        print(f"Started instances: {to_start}")
+    
+    return {
+        'statusCode': 200,
+        'body': f"Stopped: {to_stop}, Started: {to_start}"
+    }
